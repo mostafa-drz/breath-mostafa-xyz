@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A gentle breathing guide designed to help you establish a regular breathing practice and cultivate mindfulness.">
+    <meta name="keywords" content="breathing, meditation, mindfulness, relaxation, stress relief">
+    <meta name="author" content="Mostafa Darehzereshki">
+    <title>Breathe</title>
+    <style>
+        /* General Reset */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        /* Breathing Circle */
+        .circle-container {
+            position: relative;
+            width: 50vw;
+            height: 50vw;
+            max-width: 300px;
+            max-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, #4a90e2, #2c3e50, #1a1a2e);
+            box-shadow: 0 0 30px 10px rgba(74, 144, 226, 0.3);
+            animation: breathe 8s infinite ease-in-out;
+        }
+
+        @keyframes breathe {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 30px 10px rgba(74, 144, 226, 0.3);
+            }
+            50% {
+                transform: scale(1.3);
+                box-shadow: 0 0 50px 20px rgba(74, 144, 226, 0.5);
+            }
+        }
+
+        /* Message and Button */
+        .message {
+            margin-top: 20px;
+            text-align: center;
+            color: #e0e0e0;
+            font-size: 1.2rem;
+            margin-top: 5rem;
+            line-height: 1.6;
+        }
+        .message p {
+            animation: fadeIn 2s ease-in-out;
+            margin: 0.8rem 0;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .button {
+            background-color: #4a90e2;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .button:hover {
+            background-color: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .timer-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #e0e0e0;
+            font-size: 1rem;
+        }
+
+        .timer-container input {
+            width: 60px;
+            padding: 8px;
+            font-size: 1rem;
+            text-align: center;
+            border: 2px solid #4a90e2;
+            background: #2c3e50;
+            color: #fff;
+            border-radius: 8px;
+        }
+
+        .audio-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #e0e0e0;
+            font-size: 1rem;
+        }
+
+        .audio-toggle input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Final message when timer ends */
+        .final-message {
+            display: none;
+            color: #e0e0e0;
+            font-size: 1.5rem;
+            text-align: center;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="circle-container" id="circleContainer">
+        <div class="circle" id="circle"></div>
+    </div>
+
+    <div id="content">
+        <div class="message" id="focusMessage">
+            <p>Welcome to your breathing space.</p>
+            <p>Watch the circle expand and contract with your breath.</p>
+            <p>Inhale as it grows, exhale as it shrinks.</p>
+            <div class="controls">
+                <!-- Timer Input -->
+                <div class="timer-container">
+                    <label for="focusTime">Duration:</label>
+                    <input type="number" id="focusTime" min="1" value="5"> min
+                </div>
+                <!-- Audio Toggle -->
+                <div class="audio-toggle">
+                    <input type="checkbox" id="audioToggle">
+                    <label for="audioToggle">Ambient Sound</label>
+                </div>
+                <button class="button" id="startFocus">Begin Breathing</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Message -->
+    <div class="final-message" id="finalMessage">
+        <p>Thank you for taking this moment to breathe.</p>
+        <p>May you carry this sense of calm with you throughout your day.</p>
+    </div>
+
+    <!-- Audio Element -->
+    <audio id="focusAudio" loop>
+        <source src="audio.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        let timer;
+        const circle = document.getElementById("circle");
+        const focusTimeInput = document.getElementById("focusTime");
+        const startFocusButton = document.getElementById("startFocus");
+        const circleContainer = document.getElementById("circleContainer");
+        const focusMessage = document.getElementById("focusMessage");
+        const finalMessage = document.getElementById("finalMessage");
+        const audioElement = document.getElementById("focusAudio");
+        const audioToggle = document.getElementById("audioToggle");
+
+        startFocusButton.addEventListener("click", () => {
+            let focusTime = parseInt(focusTimeInput.value) || 5;
+            let focusTimeMs = focusTime * 60 * 1000; // Convert to milliseconds
+
+            // Reset visibility
+            circleContainer.style.display = "flex";
+            focusMessage.style.display = "block";
+            finalMessage.style.display = "none";
+            circle.style.animation = "breathe 8s infinite ease-in-out";
+
+            // Play audio if selected
+            if (audioToggle.checked) {
+                audioElement.play();
+            }
+
+            // Clear any previous timer
+            clearTimeout(timer);    
+
+            focusMessage.style.display = "none"; // Hide the initial message
+
+            // Start the countdown
+            timer = setTimeout(() => {
+                stopFocusSession();
+            }, focusTimeMs);
+        });
+
+        function stopFocusSession() {
+            circle.style.animation = "none"; // Stop the animation
+            circleContainer.style.display = "none"; // Hide the circle
+            finalMessage.style.display = "block"; // Show the final message
+            audioElement.pause(); // Stop audio
+        }
+    </script>
+</body>
+</html>
