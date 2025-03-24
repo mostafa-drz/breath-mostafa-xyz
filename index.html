@@ -254,9 +254,134 @@
             text-transform: uppercase;
             letter-spacing: 2px;
         }
+
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+        }
+
+        .language-select {
+            background: transparent;
+            border: 2px solid #4a90e2;
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .language-select:hover {
+            background: rgba(74, 144, 226, 0.1);
+        }
+
+        .language-select:focus {
+            outline: none;
+            border-color: #6ba5e7;
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.3);
+        }
+
+        .language-select option {
+            background: #2c3e50;
+            color: #e0e0e0;
+        }
+
+        /* RTL Support */
+        [dir="rtl"] .controls {
+            direction: rtl;
+        }
+
+        [dir="rtl"] .timer-container {
+            flex-direction: row-reverse;
+        }
+
+        [dir="rtl"] .timer-container input {
+            margin-left: 0;
+            margin-right: 0.5rem;
+        }
+
+        [dir="rtl"] .theme-buttons {
+            flex-direction: row-reverse;
+        }
+
+        [dir="rtl"] .breath-phase {
+            direction: rtl;
+        }
+
+        [dir="rtl"] .breath-phase .count {
+            direction: ltr;
+            unicode-bidi: bidi-override;
+        }
+
+        [dir="rtl"] .message {
+            direction: rtl;
+        }
+
+        [dir="rtl"] .final-message {
+            direction: rtl;
+        }
+
+        [dir="rtl"] .theme-label {
+            direction: rtl;
+        }
+
+        [dir="rtl"] .cycle-select {
+            direction: rtl;
+        }
+
+        [dir="rtl"] .button {
+            direction: rtl;
+        }
+
+        /* Update the language selector positioning for RTL */
+        [dir="rtl"] .language-selector {
+            right: auto;
+            left: 1rem;
+        }
+
+        /* RTL language specific styles */
+        [dir="rtl"] .language-select {
+            text-align: right;
+        }
+
+        [dir="rtl"] .language-select option {
+            direction: rtl;
+            text-align: right;
+        }
+
+        /* Special handling for mixed content */
+        .language-select option[value="fa"],
+        .language-select option[value="ar"] {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .language-select option[value="en"],
+        .language-select option[value="es"],
+        .language-select option[value="fr"],
+        .language-select option[value="pt"] {
+            direction: ltr;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <select class="language-select" id="languageSelect">
+            <option value="en">English</option>
+            <option value="ar">العربية</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="fa">فارسی</option>
+            <option value="pt">Português</option>
+        </select>
+    </div>
+
     <div class="breath-text" id="breathText">Inhale</div>
     <div class="circle-container" id="circleContainer">
         <div class="circle" id="circle"></div>
@@ -339,6 +464,312 @@
     </audio>
 
     <script>
+        // Language configuration
+        const i18n = {
+            en: {
+                title: 'Breathe',
+                metaDescription: 'A gentle breathing guide designed to help you establish a regular breathing practice and cultivate mindfulness.',
+                metaKeywords: 'breathing, meditation, mindfulness, relaxation, stress relief',
+                startButton: 'Begin Breathing',
+                welcomeMessage: 'Welcome to your breathing space.',
+                watchMessage: 'Watch the circle expand and contract with your breath.',
+                breathInstruction: 'Inhale as it grows, exhale as it shrinks.',
+                chooseEnvironment: 'Choose your environment:',
+                silence: 'Silence',
+                forest: 'Forest',
+                rain: 'Rain',
+                ocean: 'Ocean',
+                duration: 'Duration:',
+                minutes: 'min',
+                breathCycle: 'Breath Cycle:',
+                breathPatterns: {
+                    '4-16-8': '4-16-8 (Advanced)',
+                    '4-7-8': '4-7-8 (Relaxation)',
+                    '4-4-4': '4-4-4 (Square)',
+                    '5-2-5': '5-2-5 (Energy)'
+                },
+                phases: {
+                    inhale: 'Inhale',
+                    hold: 'Hold',
+                    exhale: 'Exhale'
+                },
+                finalMessage: {
+                    thankYou: 'Thank you for taking this moment to breathe.',
+                    carryCalm: 'May you carry this sense of calm with you throughout your day.'
+                }
+            },
+            ar: {
+                title: 'تنفس',
+                metaDescription: 'دليل تنفس لطيف مصمم لمساعدتك في إنشاء ممارسة تنفس منتظمة وتنمية اليقظة.',
+                metaKeywords: 'تنفس, تأمل, يقظة, استرخاء, تخفيف التوتر',
+                startButton: 'ابدأ التنفس',
+                welcomeMessage: 'مرحباً بك في مساحة التنفس الخاصة بك.',
+                watchMessage: 'راقب الدائرة تتوسع وتتقلص مع تنفسك.',
+                breathInstruction: 'استنشق عندما تكبر، ازفر عندما تصغر.',
+                chooseEnvironment: 'اختر بيئتك:',
+                silence: 'صمت',
+                forest: 'غابة',
+                rain: 'مطر',
+                ocean: 'محيط',
+                duration: 'المدة:',
+                minutes: 'دقيقة',
+                breathCycle: 'دورة التنفس:',
+                breathPatterns: {
+                    '4-16-8': '4-16-8 (متقدم)',
+                    '4-7-8': '4-7-8 (استرخاء)',
+                    '4-4-4': '4-4-4 (مربع)',
+                    '5-2-5': '5-2-5 (طاقة)'
+                },
+                phases: {
+                    inhale: 'استنشق',
+                    hold: 'احتفظ',
+                    exhale: 'ازفر'
+                },
+                finalMessage: {
+                    thankYou: 'شكراً لك لأخذ هذه اللحظة للتنفس.',
+                    carryCalm: 'ليحمل هذا الشعور بالهدوء معك طوال يومك.'
+                }
+            },
+              
+            es: {
+    title: 'Respira',
+    metaDescription: 'Una guía suave de respiración diseñada para ayudarte a establecer una práctica regular de respiración y cultivar la atención plena.',
+    metaKeywords: 'respiración, meditación, atención plena, relajación, alivio del estrés',
+    startButton: 'Comenzar a respirar',
+    welcomeMessage: 'Bienvenido a tu espacio de respiración.',
+    watchMessage: 'Observa cómo el círculo se expande y se contrae con tu respiración.',
+    breathInstruction: 'Inhala mientras crece, exhala mientras se encoge.',
+    chooseEnvironment: 'Elige tu entorno:',
+    silence: 'Silencio',
+    forest: 'Bosque',
+    rain: 'Lluvia',
+    ocean: 'Océano',
+    duration: 'Duración:',
+    minutes: 'min',
+    breathCycle: 'Ciclo de respiración:',
+    breathPatterns: {
+      '4-16-8': '4-16-8 (Avanzado)',
+      '4-7-8': '4-7-8 (Relajación)',
+      '4-4-4': '4-4-4 (Cuadrado)',
+      '5-2-5': '5-2-5 (Energía)'
+    },
+    phases: {
+      inhale: 'Inhala',
+      hold: 'Retén',
+      exhale: 'Exhala'
+    },
+    finalMessage: {
+      thankYou: 'Gracias por tomarte este momento para respirar.',
+      carryCalm: 'Que esta calma te acompañe durante el resto del día.'
+    }
+  },
+  fr: {
+    title: 'Respire',
+    metaDescription: 'Un guide de respiration doux conçu pour vous aider à établir une pratique régulière et cultiver la pleine conscience.',
+    metaKeywords: 'respiration, méditation, pleine conscience, relaxation, soulagement du stress',
+    startButton: 'Commencer à respirer',
+    welcomeMessage: 'Bienvenue dans votre espace de respiration.',
+    watchMessage: 'Regardez le cercle se dilater et se contracter avec votre respiration.',
+    breathInstruction: 'Inspirez quand il grandit, expirez quand il rétrécit.',
+    chooseEnvironment: 'Choisissez votre environnement :',
+    silence: 'Silence',
+    forest: 'Forêt',
+    rain: 'Pluie',
+    ocean: 'Océan',
+    duration: 'Durée :',
+    minutes: 'min',
+    breathCycle: 'Cycle respiratoire :',
+    breathPatterns: {
+      '4-16-8': '4-16-8 (Avancé)',
+      '4-7-8': '4-7-8 (Relaxation)',
+      '4-4-4': '4-4-4 (Carré)',
+      '5-2-5': '5-2-5 (Énergie)'
+    },
+    phases: {
+      inhale: 'Inspirez',
+      hold: 'Retenez',
+      exhale: 'Expirez'
+    },
+    finalMessage: {
+      thankYou: "Merci d'avoir pris ce moment pour respirer.",
+      carryCalm: 'Que ce calme vous accompagne tout au long de votre journée.'
+    }
+  },
+  fa: {
+    title: 'نفس بکش',
+    metaDescription: 'راهنمایی ملایم برای تنفس، طراحی شده برای کمک به شما در ایجاد تمرین منظم تنفس و پرورش ذهن‌آگاهی.',
+    metaKeywords: 'تنفس، مدیتیشن، ذهن‌آگاهی، آرامش، کاهش استرس',
+    startButton: 'شروع تنفس',
+    welcomeMessage: 'به فضای تنفس خود خوش آمدید.',
+    watchMessage: 'به دایره نگاه کنید که با نفس شما بزرگ و کوچک می‌شود.',
+    breathInstruction: 'هنگام بزرگ شدن نفس بکش، هنگام کوچک شدن بازدم کن.',
+    chooseEnvironment: 'محیط خود را انتخاب کنید:',
+    silence: 'سکوت',
+    forest: 'جنگل',
+    rain: 'باران',
+    ocean: 'اقیانوس',
+    duration: 'مدت زمان:',
+    minutes: 'دقیقه',
+    breathCycle: 'چرخه تنفس:',
+    breathPatterns: {
+      '4-16-8': '۴-۱۶-۸ (پیشرفته)',
+      '4-7-8': '۴-۷-۸ (آرامش)',
+      '4-4-4': '۴-۴-۴ (مربع)',
+      '5-2-5': '۵-۲-۵ (انرژی)'
+    },
+    phases: {
+      inhale: 'دم',
+      hold: 'نگه دار',
+      exhale: 'بازدم'
+    },
+    finalMessage: {
+      thankYou: 'از اینکه این لحظه را به تنفس اختصاص دادید سپاسگزاریم.',
+      carryCalm: 'امیدواریم این حس آرامش را در ادامه روز همراه داشته باشید.'
+    }
+  },
+  pt: {
+    title: 'Respire',
+    metaDescription: 'Um guia suave de respiração projetado para ajudá-lo a estabelecer uma prática regular e cultivar a atenção plena.',
+    metaKeywords: 'respiração, meditação, atenção plena, relaxamento, alívio do estresse',
+    startButton: 'Começar a respirar',
+    welcomeMessage: 'Bem-vindo ao seu espaço de respiração.',
+    watchMessage: 'Observe o círculo expandir e contrair com a sua respiração.',
+    breathInstruction: 'Inspire enquanto expande, expire enquanto contrai.',
+    chooseEnvironment: 'Escolha seu ambiente:',
+    silence: 'Silêncio',
+    forest: 'Floresta',
+    rain: 'Chuva',
+    ocean: 'Oceano',
+    duration: 'Duração:',
+    minutes: 'min',
+    breathCycle: 'Ciclo respiratório:',
+    breathPatterns: {
+      '4-16-8': '4-16-8 (Avançado)',
+      '4-7-8': '4-7-8 (Relaxamento)',
+      '4-4-4': '4-4-4 (Quadrado)',
+      '5-2-5': '5-2-5 (Energia)'
+    },
+    phases: {
+      inhale: 'Inspire',
+      hold: 'Segure',
+      exhale: 'Expire'
+    },
+    finalMessage: {
+      thankYou: 'Obrigado por dedicar este momento para respirar.',
+      carryCalm: 'Que você carregue essa calma com você ao longo do dia.'
+    }
+  }
+            
+        };
+
+        // Update the getLanguage function to handle all supported languages
+        function getLanguage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const langParam = urlParams.get('lang');
+            if (langParam && i18n[langParam]) {
+                return langParam;
+            }
+            
+            // Check localStorage
+            const savedLang = localStorage.getItem('preferredLanguage');
+            if (savedLang && i18n[savedLang]) {
+                return savedLang;
+            }
+            
+            // Check browser preference with support for all languages
+            const browserLang = navigator.language.split('-')[0];
+            const rtlLanguages = ['ar', 'fa'];
+            const supportedLanguages = ['en', 'ar', 'es', 'fr', 'fa', 'pt'];
+            
+            if (supportedLanguages.includes(browserLang)) {
+                return browserLang;
+            }
+            
+            // Default to English if no match found
+            return 'en';
+        }
+
+        // Update page content based on language
+        function updateContent(lang) {
+            const content = i18n[lang];
+            const isRTL = lang === 'ar';
+            
+            // Update meta tags
+            document.title = content.title;
+            document.querySelector('meta[name="description"]').content = content.metaDescription;
+            document.querySelector('meta[name="keywords"]').content = content.metaKeywords;
+            
+            // Update HTML content
+            document.getElementById('startFocus').textContent = content.startButton;
+            document.querySelector('#focusMessage p:nth-child(2)').textContent = content.welcomeMessage;
+            document.querySelector('#focusMessage p:nth-child(3)').textContent = content.watchMessage;
+            document.querySelector('#focusMessage p:nth-child(4)').textContent = content.breathInstruction;
+            document.querySelector('.theme-label').textContent = content.chooseEnvironment;
+            
+            // Update theme buttons
+            document.querySelector('[data-theme="none"] .theme-name').textContent = content.silence;
+            document.querySelector('[data-theme="forest"] .theme-name').textContent = content.forest;
+            document.querySelector('[data-theme="rain"] .theme-name').textContent = content.rain;
+            document.querySelector('[data-theme="ocean"] .theme-name').textContent = content.ocean;
+            
+            // Update duration and cycle labels
+            document.querySelector('label[for="focusTime"]').textContent = content.duration;
+            document.querySelector('label[for="cycleTime"]').textContent = content.breathCycle;
+            
+            // Update breath patterns
+            const cycleSelect = document.getElementById('cycleTime');
+            Object.entries(content.breathPatterns).forEach(([value, text]) => {
+                const option = cycleSelect.querySelector(`option[value="${value}"]`);
+                if (option) {
+                    option.textContent = text;
+                }
+            });
+            
+            // Update final message
+            document.querySelector('#finalMessage p:first-child').textContent = content.finalMessage.thankYou;
+            document.querySelector('#finalMessage p:last-child').textContent = content.finalMessage.carryCalm;
+            
+            // Update RTL support
+            document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+            document.documentElement.lang = lang;
+            
+            // Update language selector
+            const languageSelect = document.getElementById('languageSelect');
+            languageSelect.value = lang;
+            
+            // Update input field positions for RTL
+            const timerContainers = document.querySelectorAll('.timer-container');
+            timerContainers.forEach(container => {
+                const label = container.querySelector('label');
+                const input = container.querySelector('input, select');
+                if (isRTL) {
+                    container.insertBefore(input, label);
+                } else {
+                    container.insertBefore(label, input);
+                }
+            });
+        }
+
+        // Initialize language
+        const currentLang = getLanguage();
+        updateContent(currentLang);
+
+        // Update the language change handler to modify URL
+        document.getElementById('languageSelect').addEventListener('change', (e) => {
+            const newLang = e.target.value;
+            
+            // Update localStorage
+            localStorage.setItem('preferredLanguage', newLang);
+            
+            // Update URL without page reload
+            const url = new URL(window.location);
+            url.searchParams.set('lang', newLang);
+            window.history.pushState({}, '', url);
+            
+            // Update content
+            updateContent(newLang);
+        });
+
         let timer;
         const circle = document.getElementById("circle");
         const focusTimeInput = document.getElementById("focusTime");
@@ -458,10 +889,13 @@
         // Add this function to handle breath text animation
         function updateBreathText(phase, count) {
             const breathText = document.getElementById('breathText');
+            const content = i18n[currentLang];
+            const phaseText = content.phases[phase.toLowerCase()];
+            
             breathText.innerHTML = `
                 <div class="breath-phase">
                     <div class="count">${count}</div>
-                    <div class="label">${phase}</div>
+                    <div class="label">${phaseText}</div>
                 </div>
             `;
             breathText.classList.remove('visible');
