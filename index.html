@@ -371,6 +371,35 @@
             direction: ltr;
             text-align: left;
         }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: rgba(224, 224, 224, 0.8);
+            background: linear-gradient(to top, rgba(26, 26, 46, 0.9), transparent);
+            pointer-events: none;
+        }
+
+        .footer a {
+            color: rgba(224, 224, 224, 0.9);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .footer a:hover {
+            color: #4a90e2;
+        }
+
+        /* RTL support for footer */
+        [dir="rtl"] .footer {
+            direction: ltr;
+        }
     </style>
 </head>
 <body>
@@ -466,6 +495,13 @@
     <audio id="oceanVoice" preload="none">
         <source src="voice/ocean-guide.mp3" type="audio/mpeg">
     </audio>
+
+    <footer class="footer">
+        <p>
+            Created with ❤️ by <a href="https://github.com/mostafa-drz" target="_blank" rel="noopener">Mostafa Darehzereshki</a>
+            • <a href="https://github.com/mostafa-drz/breathe-mostafa-xyz" target="_blank" rel="noopener">GitHub</a>
+        </p>
+    </footer>
 
     <script>
         // Language configuration
@@ -1059,6 +1095,9 @@
             finalMessage.style.display = 'none';
             circle.style.animation = 'breathe 8s infinite ease-in-out';
 
+            // Hide footer during session
+            document.querySelector('.footer').style.display = 'none';
+
             // Initialize breath text
             const breathText = document.getElementById('breathText');
             breathText.style.display = 'block';
@@ -1094,6 +1133,9 @@
             circle.style.animation = 'none';
             circleContainer.style.display = 'none';
             finalMessage.style.display = 'block';
+            
+            // Show footer when session ends
+            document.querySelector('.footer').style.display = 'block';
             
             // Hide breath text
             const breathText = document.getElementById('breathText');
