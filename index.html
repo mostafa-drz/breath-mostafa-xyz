@@ -289,6 +289,62 @@
         let currentAudio = null;
         let currentVoice = null;
 
+        // Add this theme configuration object before your existing script code
+        const themeConfig = {
+            none: {
+                colors: {
+                    primary: '#4a90e2',
+                    background: '#1a1a2e',
+                    circle: {
+                        gradient: ['#4a90e2', '#2c3e50', '#1a1a2e'],
+                        shadow: 'rgba(74, 144, 226, 0.3)'
+                    }
+                },
+                animation: {
+                    duration: '8s'
+                }
+            },
+            forest: {
+                colors: {
+                    primary: '#2ecc71',
+                    background: '#1a2e1a',
+                    circle: {
+                        gradient: ['#2ecc71', '#27ae60', '#1a2e1a'],
+                        shadow: 'rgba(46, 204, 113, 0.3)'
+                    }
+                },
+                animation: {
+                    duration: '8s'
+                }
+            },
+            rain: {
+                colors: {
+                    primary: '#3498db',
+                    background: '#1a2e3a',
+                    circle: {
+                        gradient: ['#3498db', '#2980b9', '#1a2e3a'],
+                        shadow: 'rgba(52, 152, 219, 0.3)'
+                    }
+                },
+                animation: {
+                    duration: '8s'
+                }
+            },
+            ocean: {
+                colors: {
+                    primary: '#1abc9c',
+                    background: '#1a2e2e',
+                    circle: {
+                        gradient: ['#1abc9c', '#16a085', '#1a2e2e'],
+                        shadow: 'rgba(26, 188, 156, 0.3)'
+                    }
+                },
+                animation: {
+                    duration: '8s'
+                }
+            }
+        };
+
         // Theme selection handling
         const themeButtons = document.querySelectorAll('.theme-btn');
         themeButtons.forEach(button => {
@@ -308,6 +364,9 @@
                 // Update current theme
                 currentTheme = button.dataset.theme;
                 
+                // Apply theme styles
+                applyTheme(currentTheme);
+                
                 // Set up new audio if theme is not 'none'
                 if (currentTheme !== 'none') {
                     currentAudio = document.getElementById(`${currentTheme}Audio`);
@@ -315,6 +374,54 @@
                 }
             });
         });
+
+        // Add this function to apply theme styles
+        function applyTheme(theme) {
+            const config = themeConfig[theme];
+            
+            // Update background color
+            document.body.style.background = config.colors.background;
+            
+            // Update circle styles
+            const circle = document.getElementById('circle');
+            circle.style.background = `radial-gradient(circle, ${config.colors.circle.gradient.join(', ')})`;
+            circle.style.boxShadow = `0 0 30px 10px ${config.colors.circle.shadow}`;
+            
+            // Update button styles
+            const buttons = document.querySelectorAll('.button, .theme-btn');
+            buttons.forEach(btn => {
+                if (btn.classList.contains('theme-btn')) {
+                    btn.style.borderColor = config.colors.primary;
+                    btn.style.color = '#e0e0e0';
+                } else {
+                    btn.style.backgroundColor = config.colors.primary;
+                }
+            });
+            
+            // Update animation duration
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes breathe {
+                    0%, 100% {
+                        transform: scale(1);
+                        box-shadow: 0 0 30px 10px ${config.colors.circle.shadow};
+                    }
+                    50% {
+                        transform: scale(1.3);
+                        box-shadow: 0 0 50px 20px ${config.colors.circle.shadow};
+                    }
+                }
+            `;
+            
+            // Remove any existing animation style
+            const existingStyle = document.querySelector('style[data-theme-animation]');
+            if (existingStyle) {
+                existingStyle.remove();
+            }
+            
+            style.setAttribute('data-theme-animation', '');
+            document.head.appendChild(style);
+        }
 
         // Update start button click handler
         startFocusButton.addEventListener('click', () => {
@@ -372,6 +479,9 @@
                 audio.load(); // Preload the audio file
                 audio.volume = 0.7; // Set default volume to 70%
             });
+            
+            // Apply initial theme
+            applyTheme('none');
         });
     </script>
 </body>
