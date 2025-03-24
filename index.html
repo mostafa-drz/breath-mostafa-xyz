@@ -145,6 +145,63 @@
             text-align: center;
             line-height: 1.6;
         }
+
+        .sound-themes {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .theme-label {
+            color: #e0e0e0;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .theme-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .theme-btn {
+            background: transparent;
+            border: 2px solid #4a90e2;
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-btn span:first-child {
+            font-size: 1.5rem;
+        }
+
+        .theme-btn .theme-name {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .theme-btn:hover {
+            background: rgba(74, 144, 226, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .theme-btn.active {
+            background: rgba(74, 144, 226, 0.2);
+            border-color: #6ba5e7;
+            box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+        }
+
+        #startFocus {
+            margin-top: .5rem;
+            margin-bottom: 1rem;
+        } 
     </style>
 </head>
 <body>
@@ -154,21 +211,39 @@
 
     <div id="content">
         <div class="message" id="focusMessage">
+            <button class="button" id="startFocus">Begin Breathing</button>
             <p>Welcome to your breathing space.</p>
             <p>Watch the circle expand and contract with your breath.</p>
             <p>Inhale as it grows, exhale as it shrinks.</p>
             <div class="controls">
+                <!-- Sound Theme Selector -->
+                <div class="sound-themes">
+                    <p class="theme-label">Choose your environment:</p>
+                    <div class="theme-buttons">
+                        <button class="theme-btn" data-theme="none" title="No sound">
+                            <span>🤫</span>
+                            <span class="theme-name">Silence</span>
+                        </button>
+                        <button class="theme-btn" data-theme="forest" title="Forest sounds">
+                            <span>🌲</span>
+                            <span class="theme-name">Forest</span>
+                        </button>
+                        <button class="theme-btn" data-theme="rain" title="Rain sounds">
+                            <span>🌧️</span>
+                            <span class="theme-name">Rain</span>
+                        </button>
+                        <button class="theme-btn" data-theme="ocean" title="Ocean waves">
+                            <span>🌊</span>
+                            <span class="theme-name">Ocean</span>
+                        </button>
+                    </div>
+                </div>
+                
                 <!-- Timer Input -->
                 <div class="timer-container">
                     <label for="focusTime">Duration:</label>
                     <input type="number" id="focusTime" min="1" value="5"> min
                 </div>
-                <!-- Audio Toggle -->
-                <div class="audio-toggle">
-                    <input type="checkbox" id="audioToggle">
-                    <label for="audioToggle">Ambient Sound</label>
-                </div>
-                <button class="button" id="startFocus">Begin Breathing</button>
             </div>
         </div>
     </div>
@@ -179,10 +254,24 @@
         <p>May you carry this sense of calm with you throughout your day.</p>
     </div>
 
-    <!-- Audio Element -->
-    <audio id="focusAudio" loop>
-        <source src="audio.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
+    <!-- Audio Elements -->
+    <audio id="forestAudio" loop>
+        <source src="https://firebasestorage.googleapis.com/v0/b/breathe-mostafa-xyz.firebasestorage.app/o/forest.mp3?alt=media&token=c6859a7f-718a-4cfd-8304-2c413a64123d" type="audio/mpeg">
+    </audio>
+    <audio id="rainAudio" loop>
+        <source src="https://firebasestorage.googleapis.com/v0/b/breathe-mostafa-xyz.firebasestorage.app/o/rain.mp3?alt=media&token=4fccbde1-98dd-4ee5-a55e-e400415d05f1" type="audio/mpeg">
+    </audio>
+    <audio id="oceanAudio" loop>
+        <source src="https://firebasestorage.googleapis.com/v0/b/breathe-mostafa-xyz.firebasestorage.app/o/ocean.mp3?alt=media&token=012d7541-0d59-41db-a7f2-5b3871c896dd" type="audio/mpeg">
+    </audio>
+    <audio id="forestVoice" preload="none">
+        <source src="voice/forest-guide.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="rainVoice" preload="none">
+        <source src="voice/rain-guide.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="oceanVoice" preload="none">
+        <source src="voice/ocean-guide.mp3" type="audio/mpeg">
     </audio>
 
     <script>
@@ -196,25 +285,58 @@
         const audioElement = document.getElementById("focusAudio");
         const audioToggle = document.getElementById("audioToggle");
 
-        startFocusButton.addEventListener("click", () => {
+        let currentTheme = 'none';
+        let currentAudio = null;
+        let currentVoice = null;
+
+        // Theme selection handling
+        const themeButtons = document.querySelectorAll('.theme-btn');
+        themeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                themeButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Add active class to clicked button
+                button.classList.add('active');
+                
+                // Stop current audio if playing
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio.currentTime = 0;
+                }
+                
+                // Update current theme
+                currentTheme = button.dataset.theme;
+                
+                // Set up new audio if theme is not 'none'
+                if (currentTheme !== 'none') {
+                    currentAudio = document.getElementById(`${currentTheme}Audio`);
+                    currentVoice = document.getElementById(`${currentTheme}Voice`);
+                }
+            });
+        });
+
+        // Update start button click handler
+        startFocusButton.addEventListener('click', () => {
             let focusTime = parseInt(focusTimeInput.value) || 5;
-            let focusTimeMs = focusTime * 60 * 1000; // Convert to milliseconds
+            let focusTimeMs = focusTime * 60 * 1000;
 
             // Reset visibility
-            circleContainer.style.display = "flex";
-            focusMessage.style.display = "block";
-            finalMessage.style.display = "none";
-            circle.style.animation = "breathe 8s infinite ease-in-out";
+            circleContainer.style.display = 'flex';
+            focusMessage.style.display = 'none';
+            finalMessage.style.display = 'none';
+            circle.style.animation = 'breathe 8s infinite ease-in-out';
 
-            // Play audio if selected
-            if (audioToggle.checked) {
-                audioElement.play();
+            // Play selected audio and voice if any
+            if (currentAudio) {
+                currentAudio.play();
+            }
+            if (currentVoice) {
+                currentVoice.play();
             }
 
             // Clear any previous timer
-            clearTimeout(timer);    
-
-            focusMessage.style.display = "none"; // Hide the initial message
+            clearTimeout(timer);
 
             // Start the countdown
             timer = setTimeout(() => {
@@ -223,11 +345,34 @@
         });
 
         function stopFocusSession() {
-            circle.style.animation = "none"; // Stop the animation
-            circleContainer.style.display = "none"; // Hide the circle
-            finalMessage.style.display = "block"; // Show the final message
-            audioElement.pause(); // Stop audio
+            circle.style.animation = 'none';
+            circleContainer.style.display = 'none';
+            finalMessage.style.display = 'block';
+            
+            // Stop all audio
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            if (currentVoice) {
+                currentVoice.pause();
+                currentVoice.currentTime = 0;
+            }
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Preload audio files
+            const audioElements = [
+                document.getElementById('forestAudio'),
+                document.getElementById('rainAudio'),
+                document.getElementById('oceanAudio')
+            ];
+            
+            audioElements.forEach(audio => {
+                audio.load(); // Preload the audio file
+                audio.volume = 0.7; // Set default volume to 70%
+            });
+        });
     </script>
 </body>
 </html>
