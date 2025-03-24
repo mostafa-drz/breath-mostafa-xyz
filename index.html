@@ -752,6 +752,9 @@
                     container.insertBefore(label, input);
                 }
             });
+
+            // Initialize breath text with correct translation
+            initializeBreathText();
         }
 
         // Initialize language
@@ -959,18 +962,18 @@
             document.head.appendChild(style);
         }
 
-        // Update the handleAnimationPhase function
+        // Update the handleAnimationPhase function to use translated phases
         function handleAnimationPhase() {
             const totalDuration = cycleConfig.inhale + cycleConfig.hold + cycleConfig.exhale;
             const currentTime = performance.now();
             const cycleTime = (currentTime % (totalDuration * 1000)) / 1000;
             
             if (cycleTime < cycleConfig.inhale) {
-                updateBreathText('Inhale', Math.ceil(cycleConfig.inhale - cycleTime));
+                updateBreathText('inhale', Math.ceil(cycleConfig.inhale - cycleTime));
             } else if (cycleTime < cycleConfig.inhale + cycleConfig.hold) {
-                updateBreathText('Hold', Math.ceil(cycleConfig.inhale + cycleConfig.hold - cycleTime));
+                updateBreathText('hold', Math.ceil(cycleConfig.inhale + cycleConfig.hold - cycleTime));
             } else {
-                updateBreathText('Exhale', Math.ceil(totalDuration - cycleTime));
+                updateBreathText('exhale', Math.ceil(totalDuration - cycleTime));
             }
             
             animationFrameId = requestAnimationFrame(handleAnimationPhase);
@@ -1132,6 +1135,13 @@
             // Initialize cycle configuration
             updateCycleConfig('4-4-4');
         });
+
+        // Update the initial breath text in the HTML
+        function initializeBreathText() {
+            const breathText = document.getElementById('breathText');
+            const content = i18n[currentLang];
+            breathText.textContent = content.phases.inhale;
+        }
     </script>
 </body>
 </html>
