@@ -1,11 +1,33 @@
 # Breathe
 
-https://breathe.mostafa.xyz
+A mindful breathing companion that helps you establish a regular breathing practice. Visit [breathe.mostafa.xyz](https://breathe.mostafa.xyz)
 
-Breathing is the foundation of life and mindfulness. In our fast-paced world, taking moments to breathe consciously can help reduce stress, improve focus, and bring us back to the present moment.
+## Features
 
-This project provides a gentle visual breathing guide designed to help you establish a regular breathing practice. The calming animation and optional ambient sound create a peaceful environment for your breathing meditation.
+- Multiple breathing patterns (4-4-4, 4-7-8, 4-16-8, 5-2-5)
+- Ambient sound environments (Forest, Rain, Ocean)
+- Multi-language support (English, Arabic, Spanish, French, Persian, Portuguese)
+- Customizable session duration
+- Visual breathing guide
+- Mobile-friendly design
+- RTL language support
 
-Take a few minutes each day to breathe mindfully and notice how it affects your state of mind and body.
+## Development
 
-I hope this tool helps you cultivate a more mindful and peaceful relationship with your breath.
+This is a pure HTML/CSS/JavaScript application with no build process required. To run locally:
+
+1. Clone the repository
+2. Open `index.html` in your browser
+3. Start breathing!
+
+## Deployment
+
+The site is automatically deployed to GitHub Pages when changes are pushed to the main branch.
+
+## Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests.
+
+## License
+
+MIT License
